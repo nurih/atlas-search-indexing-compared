@@ -199,9 +199,11 @@ def show(method, d):
     print("Score:", d.get("score", None))
     print(d["Text"])
 
-for i in range(l['$limit']):
+
+for i in range(l["$limit"]):
     show("Vector", vector_results[i])
     show("Text", text_results[i])
 
 
 # %%
+
