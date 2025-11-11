@@ -34,6 +34,41 @@ flowchart TD
     qs((Ask)) --> Q
 ```
 
+## UX Oriented
+
+A web page performing search against both vector and text indecies. This section showcases the differences from the end-user perspective.
+
+Compile the React web app, resulting in artifacts in the [ux/dist directory](ux/dist).
+
+```shell
+cd ux
+bun install
+bun run build
+```
+
+
+Start the API and web server.
+
+```shell
+# install dependencies
+uv sync
+# run the project
+uv run uvicorn app:app
+```
+
+Navigate to the web interface, and submit a query.
+
+- Web interface at <http://localhost:8000/>
+- Swagger web interface at <http://localhost:8000/docs>
+
+> The application loads the sentence stransformer and embedding model, which may take some time at startup.
+> This can cause the web interface to time out. Let the app fully load for a bit and try again. Once loaded, 
+> there should not be noticable sluggishness.
+
+## Code Oriented
+
+This script can details the creation of the collection, data preparation, staging into MongoDB, index creation, and querying.
+
 ## Run
 
 Set up an environment:
