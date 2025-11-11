@@ -1,10 +1,13 @@
 import os
 from fastapi import FastAPI, Query
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from sentence_transformers import SentenceTransformer
 from typing import List, Literal
-from get_words import get_words 
+from get_words import get_words
+
 # --- Constants from vector_vs_text_search.py ---
 MONGODB_URI = os.environ.get("MONGO_URL")
 DB_NAME = "mongodb_genai_devday_vs"
@@ -17,6 +20,7 @@ EMBEDDING_FIELD = "embedding"
 app = FastAPI(
     title="Book Search API",
     description="An API to search for books using vector or text search.",
+    swagger_ui_parameters={"tryItOutEnabled": True},
 )
 
 
@@ -37,7 +41,6 @@ class SearchResult(BaseModel):
     books: List[Book]
 
 
-# --- Global Resources ---
 mongodb_client = MongoClient(MONGODB_URI)
 book_collection = mongodb_client[DB_NAME][COLLECTION_NAME]
 book_chunks_collection = mongodb_client[DB_NAME][COLLECTION_NAME + "_chunks"]
@@ -45,8 +48,9 @@ book_chunks_collection = mongodb_client[DB_NAME][COLLECTION_NAME + "_chunks"]
 embedding_model = SentenceTransformer("thenlper/gte-base")
 
 
-# --- Search Functions (adapted from vector_vs_text_search.py) ---
 def vector_search(user_query: str, filter={}) -> List[Book]:
+
+    print(f"Searching with VECTOR INDEX for {user_query}")
 
     query_vector = embedding_model.encode(user_query).tolist()
 
@@ -72,10 +76,13 @@ def vector_search(user_query: str, filter={}) -> List[Book]:
         },
     ]
 
-    return book_chunks_collection.aggregate(pipeline).to_list()
+    return list(book_chunks_collection.aggregate(pipeline))
 
 
 def text_search(user_query: str) -> List[Book]:
+
+    print(f"Searching with TEXT INDEX for {user_query}")
+
     pipeline = [
         {
             "$search": {
@@ -96,11 +103,10 @@ def text_search(user_query: str) -> List[Book]:
         },
     ]
 
-    return book_collection.aggregate(pipeline).to_list()
+    return list(book_collection.aggregate(pipeline))
 
 
-# --- API Endpoint ---
-@app.get("/search", response_model=SearchResult)
+@app.get("/api/search", response_model=SearchResult)
 def search_books(
     query: str,
     engine: Literal["text", "vector"] = Query(
@@ -118,22 +124,30 @@ def search_books(
     return {"engine": engine, "query": query, "books": results}
 
 
-@app.get("/book/{id}/words")
+@app.get("/api/book/{id}/words")
 def get_book_words(id: str) -> list[str]:
     doc = book_collection.find_one({"_id": id}, {"title": 1, "synopsis": 1})
     return [w for w in get_words(doc, "title", "synopsis")]
 
-    return
 
-
-@app.get("/book/{id}")
+@app.get("/api/book/{id}")
 def get_book(id: str) -> dict:
     return book_collection.find_one({"_id": id})
 
 
-@app.get("/")
-def read_root():
-    return {
-        "message": "Welcome to the Book Search API. Go to /docs to see the API documentation.",
-        "link": "/docs",
-    }
+@app.get("/api/embedding/")
+def get_embeddings(user_query: str, book_ids: list[str] = Query(...)):
+    book_embeddings = list(
+        book_chunks_collection.find({"_id": {"$in": book_ids}}, {EMBEDDING_FIELD: 1})
+    )
+    result = [
+        {"_id": "query", "embedding": embedding_model.encode(user_query).tolist()}
+    ]
+
+    for d in book_embeddings:
+        result.append(d)
+
+    return result
+
+
+app.mount("/", StaticFiles(directory="ux/dist", html=True), name="static")

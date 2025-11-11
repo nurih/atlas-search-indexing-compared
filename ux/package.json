@@ -1,0 +1,29 @@
+{
+  "name": "book-search-ux",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^5.18.0",
+    "@mui/x-charts": "^8.17.0",
+    "axios": "^1.13.2",
+    "ml-pca": "^4.1.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "esbuild": "^0.27.0",
+    "vite": "^7.2.2"
+  }
+}
