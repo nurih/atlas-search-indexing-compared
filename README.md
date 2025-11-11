@@ -36,6 +36,8 @@ flowchart TD
 
 ## UX Oriented
 
+> This assumes that you already have the MongoDB Atlas data and indecies set up (see next section).
+
 A web page performing search against both vector and text indecies. This section showcases the differences from the end-user perspective.
 
 Compile the React web app, resulting in artifacts in the [ux/dist directory](ux/dist).
@@ -45,7 +47,6 @@ cd ux
 bun install
 bun run build
 ```
-
 
 Start the API and web server.
 

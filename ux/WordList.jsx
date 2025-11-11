@@ -13,8 +13,10 @@ import {
   ListItem,
   ListItemText,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
+
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 const API_BASE_URL = `${document.location.href}api`;
 
@@ -74,14 +76,14 @@ const WordList = ({ open, bookId, query, onClose }) => {
         )}
         {!loadingWords && !errorWords && words.length > 0 && (
           <div>
-            {wordMatch.length && (
+            {wordMatch.length? (
               <Stack direction="row" spacing={1}>
                 {wordMatch.map((w) => (
                   <Chip label={w} color="success" />
                 ))}
               </Stack>
-            )}
-            <List dense sx={{ columnCount: 3, columnGap: "20px" }}>
+            ):(<>None of the query terms matched a word from the corpus directly.</>)}
+            <List dense sx={{ columnCount: 4, columnGap: "2em" }}>
               {words.map((word, index) => (
                 <ListItem key={index}>
                   <ListItemText primary={word} />
@@ -92,7 +94,9 @@ const WordList = ({ open, bookId, query, onClose }) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose} endIcon={<HighlightOffIcon />}>
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

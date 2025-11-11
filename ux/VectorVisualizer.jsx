@@ -2,21 +2,19 @@ import { PCA } from "ml-pca";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Box,
-  Button,
-  Paper,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Typography
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { ScatterChart } from "@mui/x-charts/ScatterChart";
 
 const API_BASE_URL = `${window.location.origin}/api`;
 
-const VectorVisualizer = ({ open, bookIds, query, onClose }) => {
+const VectorVisualizer = ({ bookIds, query }) => {
   const [loadingEmbeddings, setLoadingEmbeddings] = useState(false);
   const [errorEmbeddings, setErrorEmbeddings] = useState(null);
   const [points, setPoints] = useState([]);
@@ -63,44 +61,48 @@ const VectorVisualizer = ({ open, bookIds, query, onClose }) => {
   }, [open, bookIds, query]);
 
   return (
-    <Dialog open={open} maxWidth="lg" fullWidth onClose={onClose}>
-      <DialogTitle>Embeddings as Vectors</DialogTitle>
-      <DialogContent dividers>
-        {loadingEmbeddings && (
-          <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-            <CircularProgress />
-          </Box>
-        )}
+    <>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography component="span">Embedding Projection (2D)</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {loadingEmbeddings && (
+            <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
+              <CircularProgress />
+            </Box>
+          )}
 
-        {errorEmbeddings && (
-          <Typography color="error" align="center">
-            {errorEmbeddings}
-          </Typography>
-        )}
-
-        {!loadingEmbeddings && !errorEmbeddings && points.length === 0 && (
-          <Typography align="center">Embeddings did not load.</Typography>
-        )}
-
-        {points.length > 0 && (
-          <Paper sx={{ p: 2, mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Embedding Projection (2D)
+          {errorEmbeddings && (
+            <Typography color="error" align="center">
+              {errorEmbeddings}
             </Typography>
+          )}
+
+          {!loadingEmbeddings && !errorEmbeddings && points.length === 0 && (
+            <Typography align="center">Embeddings did not load.</Typography>
+          )}
+
+          {points.length > 0 && (
             <ScatterChart
-              height={400}
+              height={600}
               // series={[{ data: points, label: "Embeddings" }]}
-              series={points.map((p) => ({ data: [p], label: p.id }))}
-              xAxis={[{ label: "PC1" }]}
-              yAxis={[{ label: "PC2" }]}
+              series={points.map((p, i) => ({
+                data: [p],
+                label: p.id,
+                markerSize: i ? 8 : 12                
+              }))}
+              xAxis={[{ label: "Principle Component 1", min: -1, max: 1 }]}
+              yAxis={[{ label: "Principle Component 2", min: -1, max: 1 }]}
             />
-          </Paper>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </Dialog>
+          )}
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 };
 

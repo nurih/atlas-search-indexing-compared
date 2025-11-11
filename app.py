@@ -6,6 +6,8 @@ from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from sentence_transformers import SentenceTransformer
 from typing import List, Literal
+
+import uvicorn
 from get_words import get_words
 
 # --- Constants from vector_vs_text_search.py ---
@@ -151,3 +153,11 @@ def get_embeddings(user_query: str, book_ids: list[str] = Query(...)):
 
 
 app.mount("/", StaticFiles(directory="ux/dist", html=True), name="static")
+
+if __name__ == "__main__":    
+    uvicorn.run(
+        "app:app",          # points to the FastAPI instance
+        host="127.0.0.1",   # or "0.0.0.0" for external access
+        port=8000,
+        reload=True         # auto-reload on code changes (dev mode)
+    )
