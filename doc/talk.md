@@ -130,7 +130,36 @@ style: |
 
 ![yo](vector-search.svg)
 
-At runtime, user query is converter to `vector` that is searched against a `vector index` (database) which then retrieves the semantically similar documents.
+At runtime, user **query** is converter to a `vector` that is searched against a `vector index` (database) which then retrieves the semantically similar documents.
+
+---
+
+## Equality & Likeness
+
+Scalar comparison
+
+|Operation| Example | Meaning|
+|---|---|---|
+|`=`| 2 `=` 2 | Are two values equal|
+|`>` / `<` | 2 `>` 1 and 2 `<` 4 | Values in a range|
+
+But what about **vector** comparison?
+
+Is `[1,2]`, `[1,1]`, `[2,1]` equal? in some range? How?
+
+---
+
+## Vector Nearness
+
+### TL;DR
+>
+> Math!
+
+### Numerical methods
+
+1. Euclidean: $d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$
+1. Cosine: $d = \frac{x_1 x_2 + y_1 y_2}{\sqrt{x_1^2 + y_1^2} \, \sqrt{x_2^2 + y_2^2}}$
+1. Dot Product: $d = x_1 x_2 + y_1 y_2$
 
 ---
 
