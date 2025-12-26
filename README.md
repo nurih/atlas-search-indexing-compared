@@ -43,14 +43,18 @@ A web page performing search against both vector and text indecies. This section
 Compile the React web app, resulting in artifacts in the [ux/dist directory](ux/dist).
 
 ```shell
+pwd
 cd ux
 bun install
 bun run build
+cd ../
 ```
 
 Start the API and web server.
 
 ```shell
+## from repo root directory
+pwd
 # install dependencies
 uv sync
 # run the project

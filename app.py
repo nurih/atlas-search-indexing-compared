@@ -12,7 +12,7 @@ from get_words import get_words
 
 # --- Constants from vector_vs_text_search.py ---
 MONGODB_URI = os.environ.get("MONGO_URL")
-DB_NAME = "mongodb_genai_devday_vs"
+DB_NAME = "demo"
 COLLECTION_NAME = "book"
 VECTOR_SEARCH_INDEX_NAME = "vector_index"
 TEXT_SEARCH_INDEX_NAME = "full_text_index_book"

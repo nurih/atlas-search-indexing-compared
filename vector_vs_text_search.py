@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 
 # %%
 MONGODB_URI = os.environ.get("MONGO_URL")
-DB_NAME = "mongodb_genai_devday_vs"
+DB_NAME = "demo"
 COLLECTION_NAME = "book"
 VECTOR_SEARCH_INDEX_NAME = "vector_index"
 TEXT_SEARCH_INDEX_NAME = "full_text_index_book"
@@ -20,7 +20,7 @@ mongodb_client = MongoClient(MONGODB_URI)
 mongodb_client.list_database_names()
 
 book_collection = mongodb_client[DB_NAME][COLLECTION_NAME]
-book_chunks_collection = mongodb_client[DB_NAME][COLLECTION_NAME + "_chunks"]
+book_chunks_collection = mongodb_client[DB_NAME][f"{COLLECTION_NAME}_chunks"]
 book_collection.full_name, book_chunks_collection.full_name
 
 
@@ -234,13 +234,19 @@ from get_words import get_words
 HAS_PET_WORD = "0452281741"
 MISSING_PET_WORD = "0941807304"
 
+
 def show_tokens(id):
     doc = book_collection.find_one({"_id": id}, {"title": 1, "synopsis": 1})
-    print(id, doc["title"],'\n', [w for w in get_words(doc, "title", "synopsis") if w.startswith("p")])
-    
+    print(
+        id,
+        doc["title"],
+        "\n",
+        [w for w in get_words(doc, "title", "synopsis") if w.startswith("p")],
+    )
 
 
-show_tokens( HAS_PET_WORD)
-print('\n********')
-show_tokens( MISSING_PET_WORD)
+show_tokens(HAS_PET_WORD)
+print("\n********")
+show_tokens(MISSING_PET_WORD)
 
+# %%
