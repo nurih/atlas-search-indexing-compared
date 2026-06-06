@@ -92,6 +92,7 @@ print(f"{len(original_docs)} docs became {len(chunked_docs)} chunks")
 
 # %%
 # Create embedding for each chunk - takes time
+
 # remove any pre-existing docs
 book_chunks_collection.delete_many({})
 
@@ -100,6 +101,7 @@ for doc in tqdm(chunked_docs, "Creating embeddings for chunks and uploading."):
     book_chunks_collection.insert_one(doc_with_embedding)
 
 # %%
+# Create vector search index
 
 book_chunks_collection.create_search_index(
     {
@@ -123,6 +125,8 @@ book_chunks_collection.create_search_index(
 
 
 # %%
+# Define search method
+
 def vector_search(user_query: str, filter: dict | None = {}) -> None:
 
     query_vector = embedding_model.encode(user_query).tolist()
@@ -163,11 +167,13 @@ def vector_search(user_query: str, filter: dict | None = {}) -> None:
 
 
 # %%
+# Test the vector search method, with filter
+
 vector_search("pet", {"year": 2001})
 vector_search("pet", {"pages": {"$lt": 121}})
 
 # %%
-# "traditional" text index
+# Create a text search index
 book_collection.create_search_index(
     {
         "name": TEXT_SEARCH_INDEX_NAME,
@@ -183,6 +189,7 @@ book_collection.create_search_index(
 
 
 # %%
+# Define a text search method
 def search_text_index(user_query: str):
     pipeline = [
         {
@@ -221,13 +228,15 @@ def search_text_index(user_query: str):
 
 
 # %%
+# Run both methods
 query = "pet"
 vector_search(query)
 search_text_index(query)
 
 
 # %%
-# This shows that in text indexing, token match is basic - exact match unless sinonym / stemming / dictionaries are configured.
+# This shows that in text indexing, token match is basic 
+# produces exact match unless synonym, stemming, dictionaries are configured.
 
 from get_words import get_words
 
@@ -248,5 +257,7 @@ def show_tokens(id):
 show_tokens(HAS_PET_WORD)
 print("\n********")
 show_tokens(MISSING_PET_WORD)
+
+
 
 # %%
